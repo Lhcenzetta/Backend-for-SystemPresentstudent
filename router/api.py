@@ -26,9 +26,9 @@ def log_attendance(data: StudentID, db: Session = Depends(get_db)):
     ).order_by(Attendance.heure_pointage).all()
 
     now = datetime.now()
-    current_time = now.strftime("%H:%M")  # ✅ store only HH:MM
+    current_time = now.time().replace(second=0, microsecond=0)
 
-    # 3. Check max 4 times per day
+    
     if len(today_logs) >= 4:
         raise HTTPException(
             status_code=409,
@@ -38,7 +38,7 @@ def log_attendance(data: StudentID, db: Session = Depends(get_db)):
             }
         )
 
-    # 4. Check 2h gap between each log
+
     if today_logs:
         last_log_time = datetime.combine(today, today_logs[-1].heure_pointage)
         diff = now - last_log_time
@@ -54,13 +54,12 @@ def log_attendance(data: StudentID, db: Session = Depends(get_db)):
                 }
             )
 
-    # 5. Log attendance with HH:MM only
     new_log = Attendance(
         apogee_code=sid,
-        full_name=f"{student.first_name} {student.last_name}",  
+        full_name=f"{student.first_name} {student.last_name}",
         date_pointage=today,
         heure_pointage=current_time,
-        logs_today=len(today_logs) + 1  
+        logs_today=len(today_logs) + 1
     )
     db.add(new_log)
     db.commit()
@@ -72,7 +71,7 @@ def log_attendance(data: StudentID, db: Session = Depends(get_db)):
         "apogee_code": sid,
         "field_of_study": student.field_of_study,
         "date": today.strftime("%Y-%m-%d"),
-        "time": current_time,
+        "time": current_time.strftime("%H:%M"),
         "logs_today": len(today_logs) + 1
     }
 
@@ -86,3 +85,6 @@ def get_students(db : Session = Depends(get_db)):
 @router.get("/all_attendance")
 def get_students(db : Session = Depends(get_db)):
     return db.query(Attendance).all()
+
+
+

@@ -6,13 +6,18 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-URL_DATABASE =  f"postgresql+psycopg2://{os.getenv('user')}:{os.getenv('password')}@{os.getenv('host')}:{os.getenv('port')}/{os.getenv('database')}"
+URL_DATABASE =  os.getenv("url")
 
 engine = create_engine(URL_DATABASE)
 
 Base = declarative_base()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+from sqlalchemy.orm import Session
+
+# Création dyal l-objets (mn l-image li sifti)
+
 
 def get_db():
     db = SessionLocal()

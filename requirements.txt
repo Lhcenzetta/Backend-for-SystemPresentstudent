@@ -4,3 +4,5 @@ sqlalchemy
 pydantic
 dotenv
 psycopg2
+pyserial
+requests
